@@ -1,0 +1,132 @@
+---
+rule-providers:
+  Rule Games:
+    type: file
+    behavior: classical
+    path: "./rule_provider/Games.yaml"
+proxy-providers:
+  Proxy Private:
+    type: file
+    path: "./proxy_provider/Private.yaml"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 180
+  Proxy Public:
+    type: file
+    path: "./proxy_provider/Public.yaml"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 180
+proxy-groups:
+- name: General
+  type: url-test
+  disable-udp: false
+  use:
+  - Proxy Private
+  - Proxy Public
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+  tolerance: '300'
+- name: Private
+  type: url-test
+  disable-udp: false
+  use:
+  - Proxy Private
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+  tolerance: '300'
+- name: Public
+  type: url-test
+  disable-udp: false
+  use:
+  - Proxy Public
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+  tolerance: '300'
+- name: General Balance
+  type: load-balance
+  strategy: round-robin
+  disable-udp: false
+  use:
+  - Proxy Private
+  - Proxy Public
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+- name: Private Balance
+  type: load-balance
+  strategy: round-robin
+  disable-udp: false
+  use:
+  - Proxy Private
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+- name: Public Balance
+  type: load-balance
+  strategy: round-robin
+  disable-udp: false
+  use:
+  - Proxy Public
+  url: http://www.gstatic.com/generate_204
+  interval: '60'
+- name: Cybercloud
+  type: select
+  disable-udp: false
+  use:
+  - Proxy Private
+  - Proxy Public
+- name: Games
+  type: select
+  disable-udp: false
+  proxies:
+  - DIRECT
+  - General
+  - General Balance
+  - Private
+  - Private Balance
+  - Public
+  - Public Balance
+  - Cybercloud
+dns:
+  nameserver:
+  - dhcp://"eth1"
+  - dhcp://"eth2"
+  - dhcp://"usb0"
+  - dhcp://"wwan0"
+  - https://dns-google.com/dns-query
+  - tls://dns-google.com/
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  fake-ip-range: 198.18.0.1/16
+  listen: 127.0.0.1:7874
+  default-nameserver:
+  - 8.8.8.8
+redir-port: 7892
+tproxy-port: 7895
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+mode: rule
+log-level: info
+allow-lan: true
+external-controller: 0.0.0.0:9090
+secret: cybercloud
+bind-address: "*"
+external-ui: "/usr/share/openclash/dashboard"
+ipv6: false
+experimental:
+  ignore-resolve-fail: true
+tun:
+  enable: true
+  stack: system
+  auto-route: false
+  auto-detect-interface: false
+  dns-hijack:
+  - tcp://8.8.8.8:53
+  - tcp://8.8.4.4:53
+rules:
+- IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+- RULE-SET,Rule Games,Games
+- MATCH,GLOBAL

@@ -1,0 +1,13 @@
+/backup
+/custom
+/game_rules
+/history
+/Cybercloud.yaml
+/clash
+
+cache.db
+china_ip6_route.ipset
+china_ip_route.ipset
+Country.mmdb
+GeoSite.dat
+openclash
