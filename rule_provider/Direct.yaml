@@ -2,3 +2,9 @@ payload:
 
   - DOMAIN-SUFFIX,*
   - IP-CIDR,192.168.1.1/24
+  
+  # PayPal
+  - DOMAIN-KEYWORD,paypal
+  - DOMAIN-SUFFIX,*.paypal.com
+  - DOMAIN,paypal.com
+  - DOMAIN,paypalobjects.com:
