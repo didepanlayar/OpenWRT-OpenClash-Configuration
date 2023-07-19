@@ -90,10 +90,10 @@ proxy-groups:
   proxies:
   - DIRECT
   - General
-  - General Balance
   - Private
-  - Private Balance
   - Public
+  - General Balance
+  - Private Balance
   - Public Balance
   - Cybercloud
 dns:
