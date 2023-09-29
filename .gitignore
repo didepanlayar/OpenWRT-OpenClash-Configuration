@@ -1,9 +1,13 @@
+/.vscode
 /backup
 /custom
 /game_rules
 /history
-/Cybercloud.yaml
+/*.yaml
 /clash
+/proxy_provider/*
+!private.yaml
+!public.yaml
 
 cache.db
 china_ip6_route.ipset
@@ -11,3 +15,4 @@ china_ip_route.ipset
 Country.mmdb
 GeoSite.dat
 openclash
+.DS_Store
