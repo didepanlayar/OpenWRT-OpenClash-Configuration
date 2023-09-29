@@ -1,9 +1,5 @@
 ---
 rule-providers:
-  Rule Games:
-    type: file
-    behavior: classical
-    path: "./rule_provider/Games.yaml"
   Rule Direct:
     type: file
     behavior: classical
@@ -12,6 +8,10 @@ rule-providers:
     type: file
     behavior: classical
     path: "./rule_provider/Reject.yaml"
+  Rule Games:
+    type: file
+    behavior: classical
+    path: "./rule_provider/Games.yaml"
 proxy-providers:
   Proxy Private:
     type: file
@@ -19,108 +19,59 @@ proxy-providers:
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
-      interval: 180
+      interval: 300
   Proxy Public:
     type: file
     path: "./proxy_provider/Public.yaml"
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
-      interval: 180
+      interval: 300
 proxy-groups:
-- name: General
-  type: url-test
-  disable-udp: false
-  use:
-  - Proxy Private
-  - Proxy Public
-  url: http://www.gstatic.com/generate_204
-  interval: '60'
-  tolerance: '300'
 - name: Private
   type: url-test
   disable-udp: false
   use:
   - Proxy Private
   url: http://www.gstatic.com/generate_204
-  interval: '60'
-  tolerance: '300'
+  interval: '300'
 - name: Public
   type: url-test
   disable-udp: false
   use:
   - Proxy Public
   url: http://www.gstatic.com/generate_204
-  interval: '60'
-  tolerance: '300'
-- name: General Balance
-  type: load-balance
-  strategy: round-robin
-  disable-udp: false
-  use:
-  - Proxy Private
-  - Proxy Public
-  url: http://www.gstatic.com/generate_204
-  interval: '60'
-- name: Private Balance
-  type: load-balance
-  strategy: round-robin
-  disable-udp: false
-  use:
-  - Proxy Private
-  url: http://www.gstatic.com/generate_204
-  interval: '60'
-- name: Public Balance
-  type: load-balance
-  strategy: round-robin
-  disable-udp: false
-  use:
-  - Proxy Public
-  url: http://www.gstatic.com/generate_204
-  interval: '60'
-- name: Cybercloud
-  type: select
-  disable-udp: false
-  use:
-  - Proxy Private
-  - Proxy Public
+  interval: '300'
 - name: Games
   type: select
   disable-udp: false
   proxies:
   - DIRECT
-  - General
   - Private
   - Public
-  - General Balance
-  - Private Balance
-  - Public Balance
-  - Cybercloud
+  use:
+  - Proxy Private
+  - Proxy Public
+  url: http://www.gstatic.com/generate_204
+  interval: '300'
 dns:
   nameserver:
+  - 192.168.8.1
   - dhcp://"eth1"
   - dhcp://"eth2"
   - dhcp://"usb0"
   - dhcp://"wwan0"
-  - 8.8.8.8
-  - 8.8.4.4
-  - 1.1.1.1
-  - 1.0.0.1
   - https://dns-google.com/dns-query
-  - tls://dns-google.com
-  fallback:
-  - https://cloudflare-dns.com/dns-query
-  - https://dns.google/dns-query
-  - https://1.1.1.1/dns-query
-  - tls://dns.rubyfish.cn:853
-  - tls://8.8.8.8:853
+  - tls://dns-google.com/
   enable: true
   ipv6: false
-  enhanced-mode: fake-ip
+  enhanced-mode: redir-host
   fake-ip-range: 198.18.0.1/16
   listen: 127.0.0.1:7874
+  fake-ip-filter:
+  - "+.*"
   default-nameserver:
-  - 8.8.8.8
+  - 192.168.8.1
 redir-port: 7892
 tproxy-port: 7895
 port: 7890
@@ -134,22 +85,18 @@ secret: cybercloud
 bind-address: "*"
 external-ui: "/usr/share/openclash/dashboard"
 ipv6: false
-experimental:
-  ignore-resolve-fail: true
 tun:
   enable: true
   stack: system
-  auto-route: false
-  auto-detect-interface: false
   dns-hijack:
   - tcp://8.8.8.8:53
   - tcp://8.8.4.4:53
 profile:
   store-selected: true
-  store-fakeip: true
+  store-fake-ip: true
 rules:
 - IP-CIDR,198.18.0.1/16,REJECT,no-resolve
-- RULE-SET,Rule Games,Games
 - RULE-SET,Rule Direct,DIRECT
 - RULE-SET,Rule Reject,REJECT
+- RULE-SET,Rule Games,Games
 - MATCH,GLOBAL
