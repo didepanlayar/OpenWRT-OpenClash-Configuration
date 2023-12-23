@@ -8,14 +8,18 @@ rule-providers:
     type: file
     behavior: classical
     path: "./rule_provider/Reject.yaml"
+  Rule Private:
+    type: file
+    behavior: classical
+    path: "./rule_provider/Private.yaml"
+  Rule Public:
+    type: file
+    behavior: classical
+    path: "./rule_provider/Public.yaml"
   Rule Games:
     type: file
     behavior: classical
     path: "./rule_provider/Games.yaml"
-  Rule AdGuard:
-    type: file
-    behavior: classical
-    path: "./rule_provider/AdGuard.yaml"
 proxy-providers:
   Proxy Private:
     type: file
@@ -56,16 +60,6 @@ proxy-groups:
   use:
   - Proxy Private
   - Proxy Public
-  url: http://www.gstatic.com/generate_204
-  interval: '300'
-- name: AdGuard
-  type: select
-  disable-udp: false
-  proxies:
-  - DIRECT
-  - REJECT
-  - Private
-  - Public
   url: http://www.gstatic.com/generate_204
   interval: '300'
 dns:
@@ -112,6 +106,7 @@ rules:
 - IP-CIDR,198.18.0.1/16,REJECT,no-resolve
 - RULE-SET,Rule Direct,DIRECT
 - RULE-SET,Rule Reject,REJECT
+- RULE-SET,Rule Private,Private
+- RULE-SET,Rule Public,Public
 - RULE-SET,Rule Games,Games
-- RULE-SET,Rule AdGuard,AdGuard
 - MATCH,GLOBAL
